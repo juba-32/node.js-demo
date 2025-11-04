@@ -14,8 +14,9 @@ mongoose
   .catch((error) => console.error("❌ MongoDB connection error:", error));
 
 // server port
-app.listen(3000, () => {
-  console.log("im listening to port 3000");
+const PORT = process.env.PORT || 8080
+app.listen(PORT, () => {
+  console.log("im listening to port 8080");
 });
 
 // server path or endpoint
