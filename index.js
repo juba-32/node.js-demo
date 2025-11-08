@@ -18,7 +18,7 @@ mongoose
   .catch((error) => console.error("❌ MongoDB connection error:", error));
 
 // server port
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log("im listening to port 8080");
 });
@@ -87,7 +87,19 @@ app.post("/post", async (req, res) => {
 // ===== Create Products ======
 app.post("/products", async (req, res) => {
   try {
-    const { title, image, price, category, description, color, inStock, discount, model, brand } = req.body;
+    const {
+      title,
+      image,
+      price,
+      category,
+      description,
+      color,
+      inStock,
+      discount,
+      model,
+      brand,
+    } = req.body;
+
     const newProduct = new Product({
       title: title,
       image: image,
@@ -98,7 +110,7 @@ app.post("/products", async (req, res) => {
       color: color,
       inStock: inStock,
       brand: brand,
-      model: model
+      model: model,
     });
     await newProduct.save();
     res.status(201).json({
@@ -113,12 +125,25 @@ app.post("/products", async (req, res) => {
 
 app.get("/products", async (req, res) => {
   try {
-    const products = await Product.find().lean();
+    const {selectCategory} = req.query;
+    console.log("🔍 RAW QUERY:", selectCategory);
+    const filter = {};
+    // 🏷️ Filter by category
+    if (selectCategory) {
+      filter.category = { $regex: selectCategory, $options: "i" };
+    }
+    
+    console.log("🧩 FINAL FILTER APPLIED:", filter); // <== see the actual filter object
+
+    const products = await Product.find(filter).lean();
     res.status(200).json(products);
   } catch (err) {
+    console.error("Error fetching products:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
 
 app.get("/products/:id", async (req, res) => {
   try {
