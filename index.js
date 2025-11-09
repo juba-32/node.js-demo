@@ -125,7 +125,7 @@ app.post("/products", async (req, res) => {
 
 app.get("/products", async (req, res) => {
   try {
-    const {selectCategory, minPrice, maxPrice } = req.query;
+    const {selectCategory, minPrice, maxPrice, search } = req.query;
     const filter = {};
     // 🏷️ Filter by category
     if (selectCategory) {
@@ -136,6 +136,14 @@ app.get("/products", async (req, res) => {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+     // 🔍 Filter by search (title or description)
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { brand: { $regex: search, $options: "i" } },
+      ];
     }
     const products = await Product.find(filter).lean();
     res.status(200).json(products);
