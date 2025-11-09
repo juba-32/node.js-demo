@@ -125,16 +125,18 @@ app.post("/products", async (req, res) => {
 
 app.get("/products", async (req, res) => {
   try {
-    const {selectCategory} = req.query;
-    console.log("🔍 RAW QUERY:", selectCategory);
+    const {selectCategory, minPrice, maxPrice } = req.query;
     const filter = {};
     // 🏷️ Filter by category
     if (selectCategory) {
       filter.category = { $regex: selectCategory, $options: "i" };
     }
-    
-    console.log("🧩 FINAL FILTER APPLIED:", filter); // <== see the actual filter object
-
+     // 💰 Filter by price range
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
     const products = await Product.find(filter).lean();
     res.status(200).json(products);
   } catch (err) {
