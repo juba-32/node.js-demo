@@ -20,10 +20,8 @@ mongoose
 // server port
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log("im listening to port 8080");
+  console.log(`im listening to port: ${PORT}`);
 });
-
-
 
 // path params
 app.get("/pathParams/:num1/:num2", (req, res) => {
