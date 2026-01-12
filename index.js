@@ -23,23 +23,6 @@ app.listen(PORT, () => {
   console.log(`im listening to port: ${PORT}`);
 });
 
-// path params
-app.get("/pathParams/:num1/:num2", (req, res) => {
-  const num1 = req.params.num1;
-  const num2 = req.params.num2;
-  const total = Number(num1) + Number(num2);
-  res.send(`total is:  ${total}`);
-});
-
-// body params
-app.post("/bodyParams", (req, res) => {
-  const name = req.body.name;
-  const age = req.body.age;
-  const position = req.body.position;
-  const person = name + " " + age + " " + position;
-  res.send(`${person}`);
-});
-
 // ===== Create User ======
 app.post("/user", async (req, res) => {
   try {
@@ -64,13 +47,6 @@ app.get("/users", async (req, res) => {
 });
 
 // ===== Create Post ======
-app.post("/post", async (req, res) => {
-  const newPost = new Post();
-  newPost.title = "post title";
-  newPost.body = "post body";
-  await newPost.save();
-  res.send("create post");
-});
 
 // ===== Create Product ======
 app.post("/products", async (req, res) => {
@@ -121,21 +97,15 @@ app.get("/products", async (req, res) => {
     if (selectCategory) {
       filter.category = { $regex: selectCategory, $options: "i" };
     }
-
     // Price filter (optional)
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
-
     // Search filter
     if (search) {
-      filter.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { brand: { $regex: search, $options: "i" } },
-      ];
+      filter = { title: { $regex: search, $options: "i" } };
     }
 
     // Apply limit if provided
