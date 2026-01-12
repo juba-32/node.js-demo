@@ -72,7 +72,7 @@ app.post("/post", async (req, res) => {
   res.send("create post");
 });
 
-// ===== Create Products ======
+// ===== Create Product ======
 app.post("/products", async (req, res) => {
   try {
     const {
@@ -106,12 +106,12 @@ app.post("/products", async (req, res) => {
       Products: newProduct,
     });
   } catch (err) {
-    console.log("Error Creating Products", err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-
+// ===== Get all Products ======
 app.get("/products", async (req, res) => {
   try {
     const { selectCategory, minPrice, maxPrice, search, limit } = req.query;
@@ -150,7 +150,7 @@ app.get("/products", async (req, res) => {
   }
 });
 
-
+// ===== get Product By ID ======
 app.get("/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -158,6 +158,39 @@ app.get("/products/:id", async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
     res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ===== Delete Product By ID ======
+app.delete("/products/:id", async (req, res) => {
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    if (!deletedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({
+      message: "Product deleted successfully",
+      product: deletedProduct,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ===== Update Product By ID ======
+app.put("/products/:id", async (req, res) => {
+  try {
+    const updateProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.status(200).json({
+      message: "Product updated successfully",
+      product: updateProduct,
+    });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
