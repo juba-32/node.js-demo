@@ -104,8 +104,11 @@ app.get("/products", async (req, res) => {
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
     // Search filter
-    if (search) {
-      filter = { title: { $regex: search, $options: "i" } };
+    if (search?.trim()) {
+      filter.title = {
+        $regex: search.trim(),
+        $options: "i",
+      };
     }
 
     // Apply limit if provided
